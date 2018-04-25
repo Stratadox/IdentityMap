@@ -26,6 +26,14 @@ class IdentityMap_contains_entities_by_id extends TestCase
     }
 
     /** @test */
+    function using_a_numeric_identity()
+    {
+        $this->assertTrue(IdentityMap::with([
+            '26' => new Foo
+        ])->has(Foo::class, '26'));
+    }
+
+    /** @test */
     function lacking_the_object_in_the_map()
     {
         $this->assertFalse(IdentityMap::startEmpty()->has(Foo::class, 'foo'));
