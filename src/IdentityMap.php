@@ -29,7 +29,7 @@ final class IdentityMap implements MapsObjectsByIdentity
     {
         $map = [];
         foreach ($objects as $id => $object) {
-            $map = IdentityMap::addTo($map, $id, $object);
+            $map = IdentityMap::addTo($map, (string) $id, $object);
         }
         return new self($map);
     }
