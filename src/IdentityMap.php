@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Stratadox\IdentityMap;
 
 use function get_class as theClassOfThe;
-use function get_class;
 
 /**
  * Contains objects by class and id.
@@ -81,7 +80,7 @@ final class IdentityMap implements MapsObjectsByIdentity
     public function idOf(object $object): string
     {
         $this->mustKnowThisTypeOf($object);
-        foreach ($this->map[get_class($object)] as $id => $mappedObject) {
+        foreach ($this->map[theClassOfThe($object)] as $id => $mappedObject) {
             if ($object === $mappedObject) {
                 return (string) $id;
             }
@@ -126,7 +125,7 @@ final class IdentityMap implements MapsObjectsByIdentity
      */
     private function mustKnowThisTypeOf(object $object): void
     {
-        if (!isset($this->map[get_class($object)])) {
+        if (!isset($this->map[theClassOfThe($object)])) {
             throw IdentityNotFound::forThe($object);
         }
     }
