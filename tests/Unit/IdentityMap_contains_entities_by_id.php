@@ -7,6 +7,7 @@ use Faker\Factory as Faker;
 use const PHP_INT_MAX as BIGGEST_NUMBER;
 use const PHP_INT_MIN as SMALLEST_NEGATIVE_NUMBER;
 use PHPUnit\Framework\TestCase;
+use function random_int;
 use Stratadox\IdentityMap\AlreadyThere;
 use Stratadox\IdentityMap\IdentityMap;
 use Stratadox\IdentityMap\NoSuchObject;
@@ -227,7 +228,12 @@ class IdentityMap_contains_entities_by_id extends TestCase
         $bigNumber = (string) $random->numberBetween(100, BIGGEST_NUMBER);
         $negativeNumber = (string) $random->numberBetween(-1, SMALLEST_NEGATIVE_NUMBER);
         $word = $random->word;
+        $slug = $random->slug;
+        $email = $random->email;
+        $isbn = random_int(0, 1) ? $random->isbn10 : $random->isbn13;
+        $url = $random->url;
         $sentence = $random->sentence;
+        $macAddress = $random->macAddress;
         $compositeName = $random->firstName . ':' . $random->lastName;
 
         return [
@@ -236,7 +242,12 @@ class IdentityMap_contains_entities_by_id extends TestCase
             "big number ($bigNumber)"           => [$bigNumber],
             "negative number ($negativeNumber)" => [$negativeNumber],
             "word ($word)"                      => [$word],
+            "slug ($slug)"                      => [$slug],
+            "email ($email)"                    => [$email],
+            "isbn ($isbn)"                      => [$isbn],
+            "url ($url)"                        => [$url],
             "sentence ($sentence)"              => [$sentence],
+            "mac address ($macAddress)"         => [$macAddress],
             "composite name ($compositeName)"   => [$compositeName],
         ];
     }
