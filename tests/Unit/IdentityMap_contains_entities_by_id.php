@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace Stratadox\IdentityMap\Test\Unit;
 
+use Faker\Factory as Faker;
+use const PHP_INT_MAX as BIGGEST_NUMBER;
+use const PHP_INT_MIN as SMALLEST_NEGATIVE_NUMBER;
 use PHPUnit\Framework\TestCase;
 use Stratadox\IdentityMap\AlreadyThere;
 use Stratadox\IdentityMap\IdentityMap;
@@ -17,137 +20,184 @@ use Stratadox\IdentityMap\Test\Unit\Fixture\Foo;
  */
 class IdentityMap_contains_entities_by_id extends TestCase
 {
-    /** @test */
-    function having_the_object_in_the_map()
+    /**
+     * @test
+     * @dataProvider randomId
+     */
+    function having_the_object_in_the_map($id)
     {
         $this->assertTrue(IdentityMap::with([
-            'foo' => new Foo
-        ])->has(Foo::class, 'foo'));
+            $id => new Foo
+        ])->has(Foo::class, $id));
     }
 
-    /** @test */
-    function using_a_numeric_identity()
+    /**
+     * @test
+     * @dataProvider randomId
+     */
+    function lacking_the_object_in_the_map($id)
     {
-        $this->assertTrue(IdentityMap::with([
-            '26' => new Foo
-        ])->has(Foo::class, '26'));
+        $this->assertFalse(IdentityMap::startEmpty()->has(Foo::class, $id));
     }
 
-    /** @test */
-    function lacking_the_object_in_the_map()
-    {
-        $this->assertFalse(IdentityMap::startEmpty()->has(Foo::class, 'foo'));
-    }
-
-    /** @test */
-    function lacking_the_object_of_the_class()
+    /**
+     * @test
+     * @dataProvider randomId
+     */
+    function lacking_the_object_of_the_class($id)
     {
         $this->assertFalse(IdentityMap::with([
-            'foo' => new Foo
-        ])->has(Bar::class, 'foo'));
+            $id => new Foo
+        ])->has(Bar::class, $id));
     }
 
-    /** @test */
-    function retrieving_the_object_from_the_map()
+    /**
+     * @test
+     * @dataProvider randomId
+     */
+    function retrieving_the_object_from_the_map($id)
     {
         $foo = new Foo;
         $this->assertSame($foo, IdentityMap::with([
-            'foo' => $foo
-        ])->get(Foo::class, 'foo'));
+            $id => $foo
+        ])->get(Foo::class, $id));
     }
 
-    /** @test */
-    function retrieving_the_same_object_from_the_map_twice()
+    /**
+     * @test
+     * @dataProvider randomId
+     */
+    function retrieving_the_same_object_from_the_map_twice($id)
     {
         $map = IdentityMap::with([
-            'foo' => new Foo
+            $id => new Foo
         ]);
         $this->assertSame(
-            $map->get(Foo::class, 'foo'),
-            $map->get(Foo::class, 'foo')
+            $map->get(Foo::class, $id),
+            $map->get(Foo::class, $id)
         );
     }
 
-    /** @test */
-    function differentiating_between_objects_with_different_identities()
+    /**
+     * @test
+     * @dataProvider randomId
+     */
+    function differentiating_between_objects_with_different_identities($id)
     {
         $map = IdentityMap::with([
-            'foo1' => new Foo,
-            'foo2' => new Foo,
+            "$id:1" => new Foo,
+            "$id:2" => new Foo,
         ]);
         $this->assertEquals(
-            $map->get(Foo::class, 'foo1'),
-            $map->get(Foo::class, 'foo2')
+            $map->get(Foo::class, "$id:1"),
+            $map->get(Foo::class, "$id:2")
         );
         $this->assertNotSame(
-            $map->get(Foo::class, 'foo1'),
-            $map->get(Foo::class, 'foo2')
+            $map->get(Foo::class, "$id:1"),
+            $map->get(Foo::class, "$id:2")
         );
     }
 
-    /** @test */
-    function adding_the_object_to_the_map()
+    /**
+     * @test
+     * @dataProvider randomId
+     */
+    function adding_the_object_to_the_map($id)
     {
         $map = IdentityMap::startEmpty();
         $foo = new Foo;
-        $map = $map->add('foo', $foo);
-        $this->assertTrue($map->has(Foo::class, 'foo'));
+        $map = $map->add($id, $foo);
+        $this->assertTrue($map->has(Foo::class, $id));
     }
 
-    /** @test */
-    function removing_the_object_from_the_map()
+    /**
+     * @test
+     * @dataProvider randomId
+     */
+    function removing_the_object_from_the_map($id)
     {
         $map = IdentityMap::with([
-            'foo' => new Foo
+            $id => new Foo
         ]);
-        $map = $map->remove(Foo::class, 'foo');
-        $this->assertFalse($map->has(Foo::class, 'foo'));
+        $map = $map->remove(Foo::class, $id);
+        $this->assertFalse($map->has(Foo::class, $id));
     }
 
-    /** @test */
-    function throwing_an_exception_when_getting_something_that_is_not_there()
+    /**
+     * @test
+     * @dataProvider randomId
+     */
+    function throwing_an_exception_when_getting_something_that_is_not_there($id)
     {
         $map = IdentityMap::startEmpty();
 
         $this->expectException(NoSuchObject::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            'The object with id `foo` of class `' . Foo::class . '` is ' .
-            'not in the identity map.'
+            'The object with id `' . $id . '` of class `' . Foo::class . '` ' .
+            'is not in the identity map.'
         );
 
-        $map->get(Foo::class, 'foo');
+        $map->get(Foo::class, $id);
     }
 
-    /** @test */
-    function throwing_an_exception_when_removing_something_that_is_not_there()
+    /**
+     * @test
+     * @dataProvider randomId
+     */
+    function throwing_an_exception_when_removing_something_that_is_not_there($id)
     {
         $map = IdentityMap::startEmpty();
 
         $this->expectException(NoSuchObject::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            'The object with id `foo` of class `' . Foo::class . '` is ' .
-            'not in the identity map.'
+            'The object with id `' . $id . '` of class `' . Foo::class . '` ' .
+            'is not in the identity map.'
         );
 
-        $map->remove(Foo::class, 'foo');
+        $map->remove(Foo::class, $id);
     }
 
-    /** @test */
-    function throwing_an_exception_when_trying_to_add_an_object_that_was_already_there()
+    /**
+     * @test
+     * @dataProvider randomId
+     */
+    function throwing_an_exception_when_trying_to_add_an_object_that_was_already_there($id)
     {
         $map = IdentityMap::with([
-            'foo' => new Foo
+            $id => new Foo
         ]);
 
         $this->expectException(AlreadyThere::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            'The object with id `foo` of class `' . Foo::class . '` is ' .
-            'already in the identity map.'
+            'The object with id `' . $id . '` of class `' . Foo::class . '` ' .
+            'is already in the identity map.'
         );
 
-        $map->add('foo', new Foo);
+        $map->add($id, new Foo);
+    }
+
+    public function randomId(): array
+    {
+        $random = Faker::create();
+        $uuid = $random->uuid;
+        $smallNumber = (string) $random->numberBetween(0, 100);
+        $bigNumber = (string) $random->numberBetween(100, BIGGEST_NUMBER);
+        $negativeNumber = (string) $random->numberBetween(-1, SMALLEST_NEGATIVE_NUMBER);
+        $word = $random->word;
+        $sentence = $random->sentence;
+        $compositeName = $random->firstName . ':' . $random->lastName;
+
+        return [
+            "uuid ($uuid)"                     => [$uuid],
+            "smallNumber ($smallNumber)"       => [$smallNumber],
+            "bigNumber ($bigNumber)"           => [$bigNumber],
+            "negativeNumber ($negativeNumber)" => [$negativeNumber],
+            "word ($word)"                     => [$word],
+            "sentence ($sentence)"             => [$sentence],
+            "composite name ($compositeName)"  => [$compositeName],
+        ];
     }
 }
