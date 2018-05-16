@@ -194,7 +194,7 @@ class IdentityMap_contains_entities_by_id extends TestCase
     /** @test */
     function throwing_an_exception_when_trying_to_get_the_id_in_an_empty_map()
     {
-        $map = IdentityMap::with(['foo' => new Foo]);
+        $map = IdentityMap::startEmpty();
 
         $this->expectException(NoSuchObject::class);
         $this->expectExceptionCode(0);
@@ -208,7 +208,7 @@ class IdentityMap_contains_entities_by_id extends TestCase
     /** @test */
     function throwing_an_exception_when_trying_to_get_the_id_of_an_unmapped_object()
     {
-        $map = IdentityMap::startEmpty();
+        $map = IdentityMap::with(['foo' => new Foo]);
 
         $this->expectException(NoSuchObject::class);
         $this->expectExceptionCode(0);
@@ -231,13 +231,13 @@ class IdentityMap_contains_entities_by_id extends TestCase
         $compositeName = $random->firstName . ':' . $random->lastName;
 
         return [
-            "uuid ($uuid)"                     => [$uuid],
-            "smallNumber ($smallNumber)"       => [$smallNumber],
-            "bigNumber ($bigNumber)"           => [$bigNumber],
-            "negativeNumber ($negativeNumber)" => [$negativeNumber],
-            "word ($word)"                     => [$word],
-            "sentence ($sentence)"             => [$sentence],
-            "composite name ($compositeName)"  => [$compositeName],
+            "uuid ($uuid)"                      => [$uuid],
+            "small number ($smallNumber)"       => [$smallNumber],
+            "big number ($bigNumber)"           => [$bigNumber],
+            "negative number ($negativeNumber)" => [$negativeNumber],
+            "word ($word)"                      => [$word],
+            "sentence ($sentence)"              => [$sentence],
+            "composite name ($compositeName)"   => [$compositeName],
         ];
     }
 }
