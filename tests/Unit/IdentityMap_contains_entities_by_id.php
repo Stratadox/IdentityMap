@@ -127,6 +127,18 @@ class IdentityMap_contains_entities_by_id extends TestCase
      * @test
      * @dataProvider randomId
      */
+    function retrieving_the_id_of_a_mapped_entity($id)
+    {
+        $foo = new Foo;
+        $map = IdentityMap::with([$id => $foo]);
+
+        $this->assertSame($id, $map->idOf($foo));
+    }
+
+    /**
+     * @test
+     * @dataProvider randomId
+     */
     function throwing_an_exception_when_getting_something_that_is_not_there($id)
     {
         $map = IdentityMap::startEmpty();
@@ -177,6 +189,34 @@ class IdentityMap_contains_entities_by_id extends TestCase
         );
 
         $map->add($id, new Foo);
+    }
+
+    /** @test */
+    function throwing_an_exception_when_trying_to_get_the_id_in_an_empty_map()
+    {
+        $map = IdentityMap::with(['foo' => new Foo]);
+
+        $this->expectException(NoSuchObject::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            'The object of class `' . Foo::class . '` is not in the identity map.'
+        );
+
+        $map->idOf(new Foo);
+    }
+
+    /** @test */
+    function throwing_an_exception_when_trying_to_get_the_id_of_an_unmapped_object()
+    {
+        $map = IdentityMap::startEmpty();
+
+        $this->expectException(NoSuchObject::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            'The object of class `' . Foo::class . '` is not in the identity map.'
+        );
+
+        $map->idOf(new Foo);
     }
 
     public function randomId(): array

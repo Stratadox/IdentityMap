@@ -50,4 +50,13 @@ interface MapsObjectsByIdentity
      * @throws NoSuchObject When there is no object of that class with that id.
      */
     public function remove(string $class, string $id): MapsObjectsByIdentity;
+
+    /**
+     * Retrieves the id of the object.
+     *
+     * @param object $object The object that is in the map.
+     * @return string        The identifier for the object.
+     * @throws NoSuchObject  When the object is not in the map.
+     */
+    public function idOf(object $object): string;
 }

@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace Stratadox\IdentityMap;
 
-use InvalidArgumentException;
+use function get_class;
+use InvalidArgumentException as InvalidArgument;
 use function sprintf as withMessage;
 
 /**
@@ -11,9 +12,7 @@ use function sprintf as withMessage;
  *
  * @author Stratadox
  */
-final class IdentityNotFound
-    extends InvalidArgumentException
-    implements NoSuchObject
+final class IdentityNotFound extends InvalidArgument implements NoSuchObject
 {
     /**
      * Produces an exception for when the object is not in the map.
@@ -28,6 +27,14 @@ final class IdentityNotFound
             'The object with id `%s` of class `%s` is not in the identity map.',
             $id,
             $class
+        ));
+    }
+
+    public static function forThe(object $object): self
+    {
+        return new IdentityNotFound(withMessage(
+            'The object of class `%s` is not in the identity map.',
+            get_class($object)
         ));
     }
 }

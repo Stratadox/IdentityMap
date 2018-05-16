@@ -3,12 +3,10 @@ declare(strict_types=1);
 
 namespace Stratadox\IdentityMap;
 
-use InvalidArgumentException;
+use InvalidArgumentException as InvalidArgument;
 use function sprintf as withMessage;
 
-final class DuplicationDetected
-    extends InvalidArgumentException
-    implements AlreadyThere
+final class DuplicationDetected extends InvalidArgument implements AlreadyThere
 {
     /**
      * Produces an exception for when the object is already in the map.
