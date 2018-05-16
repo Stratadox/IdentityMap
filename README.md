@@ -69,3 +69,7 @@ To retrieve the corresponding object from the map:
 ```php
 $object = $map->get(Foo::class, '1');
 ```
+To retrieve the id of an object that is in the map:
+```php
+$id = $map->idOf($object);
+```
