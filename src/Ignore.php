@@ -16,7 +16,7 @@ final class Ignore implements MapsObjectsByIdentity
     private function __construct(string $ignoredClass, MapsObjectsByIdentity $identityMap)
     {
         $this->ignoredClass = $ignoredClass;
-        $this->identityMap = $identityMap->removeThe($ignoredClass);
+        $this->identityMap = $identityMap->removeAllObjectsOfThe($ignoredClass);
     }
 
     /**
@@ -68,12 +68,12 @@ final class Ignore implements MapsObjectsByIdentity
     }
 
     /** @inheritdoc */
-    public function removeThe(string $class): MapsObjectsByIdentity
+    public function removeAllObjectsOfThe(string $class): MapsObjectsByIdentity
     {
         if ($class === $this->ignoredClass) {
             return $this;
         }
-        return $this->identityMap->removeThe($class);
+        return $this->identityMap->removeAllObjectsOfThe($class);
     }
 
     /** @inheritdoc */

@@ -91,7 +91,7 @@ class Ignore_all_instances_of_a_class extends TestCase
     {
         $map = Ignore::the(Foo::class, IdentityMap::with(['bar' => new Bar]));
 
-        $map = $map->removeThe(Bar::class);
+        $map = $map->removeAllObjectsOfThe(Bar::class);
 
         $this->assertFalse($map->has(Bar::class, 'bar'));
     }
@@ -101,7 +101,7 @@ class Ignore_all_instances_of_a_class extends TestCase
     {
         $map = Ignore::the(Foo::class, IdentityMap::with(['foo' => new Foo]));
 
-        $remove = $map->removeThe(Foo::class);
+        $remove = $map->removeAllObjectsOfThe(Foo::class);
 
         $this->assertSame($map, $remove);
     }

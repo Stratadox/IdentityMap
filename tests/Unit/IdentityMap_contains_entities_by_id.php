@@ -157,7 +157,7 @@ class IdentityMap_contains_entities_by_id extends TestCase
             "$id:2" => $foo2,
             $id     => $bar,
         ]);
-        $map = $map->removeThe(Foo::class);
+        $map = $map->removeAllObjectsOfThe(Foo::class);
 
         $this->assertFalse($map->has(Foo::class, "$id:1"));
         $this->assertFalse($map->has(Foo::class, "$id:2"));
@@ -174,7 +174,7 @@ class IdentityMap_contains_entities_by_id extends TestCase
         $bar  = new Bar;
 
         $map = IdentityMap::with(['bar' => $bar]);
-        $map = $map->removeThe(Foo::class);
+        $map = $map->removeAllObjectsOfThe(Foo::class);
 
         $this->assertTrue($map->has(Bar::class, 'bar'));
     }

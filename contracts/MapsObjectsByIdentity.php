@@ -74,5 +74,5 @@ interface MapsObjectsByIdentity
      * @param string $class
      * @return MapsObjectsByIdentity
      */
-    public function removeThe(string $class): MapsObjectsByIdentity;
+    public function removeAllObjectsOfThe(string $class): MapsObjectsByIdentity;
 }
