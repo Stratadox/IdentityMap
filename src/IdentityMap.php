@@ -98,6 +98,9 @@ final class IdentityMap implements MapsObjectsByIdentity
     public function removeThe(string $class): MapsObjectsByIdentity
     {
         $map = $this->map;
+        if (!isset($map[$class])) {
+            return $this;
+        }
         $reverse = $this->reverseMap;
         foreach ($map[$class] as $object) {
             makeSureThat(itIsAn($object));

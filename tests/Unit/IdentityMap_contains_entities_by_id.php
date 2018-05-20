@@ -168,6 +168,17 @@ class IdentityMap_contains_entities_by_id extends TestCase
         $this->assertTrue($map->hasThe($bar));
     }
 
+    /** @test */
+    function doing_nothing_when_removing_an_unknown_class()
+    {
+        $bar  = new Bar;
+
+        $map = IdentityMap::with(['bar' => $bar]);
+        $map = $map->removeThe(Foo::class);
+
+        $this->assertTrue($map->has(Bar::class, 'bar'));
+    }
+
     /**
      * @test
      * @dataProvider randomId
