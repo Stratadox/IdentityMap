@@ -14,7 +14,9 @@ Maps objects by identity.
 ## About
 
 Contains the objects that have already been loaded.
-Used to prevent double loading of unique entities.
+
+Mainly used to prevent double loading of unique entities, and as registry of the
+loaded entities.
 
 ## Installation
 
@@ -46,7 +48,7 @@ Either create a map pre-filled with objects:
 $map = IdentityMap::with([
     'id1' => $object1,
     'id2' => $object2,
-])
+]);
 ```
 Or start with a blank map:
 ```php
@@ -86,4 +88,23 @@ if ($map->hasThe($object)) { ...
 To retrieve the id of an object that is in the map:
 ```php
 $id = $map->idOf($object);
+```
+
+### Preventing unwanted classes
+
+When loading a bunch of objects that may consist of both entities and value 
+objects, one may want to ignore the value objects when provisioning the identity
+map.
+
+This can be done by wrapping the identity map:
+```php
+$map = Ignore::the(SomeValueObject::class, IdentityMap::startEmpty());
+```
+Adding objects of, in this case, the `SomeValueObject` class, will be silently
+ignored.
+
+Multiple value objects can be ignored by wrapping the wrapped maps:
+
+```php
+$map = Ignore::the(Foo::class, Ignore::the(Bar::class, IdentityMap::startEmpty()));
 ```
