@@ -51,29 +51,33 @@ interface MapsObjectsByIdentity
     /**
      * Adds an object to the map.
      *
-     * @param string $id     The identity of the object, unique per class.
-     * @param object $object The object to assign to this id.
-     * @return IdentityMap   A copy of the map that includes the object.
-     * @throws AlreadyThere  When the object was already in the map.
+     * @param string $id             The identity of the object, unique per
+     *                               class.
+     * @param object $object         The object to assign to this id.
+     * @return MapsObjectsByIdentity A copy of the map that includes the object.
+     * @throws AlreadyThere          When the object was already in the map.
      */
     public function add(string $id, object $object): MapsObjectsByIdentity;
 
     /**
      * Removes an object from the map.
      *
-     * @param string $class The class of the object to remove.
-     * @param string $id    The identity of the object, unique per class.
-     * @return IdentityMap  A copy of the map excluding the object.
-     * @throws NoSuchObject When there is no object of that class with that id.
+     * @param string $class          The class of the object to remove.
+     * @param string $id             The identity of the object, unique per
+     *                               class.
+     * @return MapsObjectsByIdentity A copy of the map excluding the object.
+     * @throws NoSuchObject          When there is no object of that class with
+     *                               that id.
      */
     public function remove(string $class, string $id): MapsObjectsByIdentity;
 
     /**
      * Removes an instance from the map.
      *
-     * @param object $object The object to remove.
-     * @return IdentityMap  A copy of the map excluding the object.
-     * @throws NoSuchObject When there is no object of that class with that id.
+     * @param object $object         The object to remove.
+     * @return MapsObjectsByIdentity A copy of the map excluding the object.
+     * @throws NoSuchObject          When there is no object of that class with
+     *                               that id.
      */
     public function removeThe(object $object): MapsObjectsByIdentity;
 
