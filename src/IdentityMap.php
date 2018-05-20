@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Stratadox\IdentityMap;
 
+use function assert as makeSureThat;
 use function get_class as theClassOfThe;
+use function is_object as itIsAn;
 use function spl_object_id as theInstanceIdOf;
 
 /**
@@ -89,6 +91,19 @@ final class IdentityMap implements MapsObjectsByIdentity
             $reverse[theInstanceIdOf($map[$class][$id])],
             $map[$class][$id]
         );
+        return new IdentityMap($map, $reverse);
+    }
+
+    /** @inheritdoc */
+    public function removeThe(string $class): MapsObjectsByIdentity
+    {
+        $map = $this->map;
+        $reverse = $this->reverseMap;
+        foreach ($map[$class] as $object) {
+            makeSureThat(itIsAn($object));
+            unset($reverse[theInstanceIdOf($object)]);
+        }
+        unset($map[$class]);
         return new IdentityMap($map, $reverse);
     }
 

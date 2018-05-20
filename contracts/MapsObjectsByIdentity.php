@@ -40,6 +40,15 @@ interface MapsObjectsByIdentity
     public function get(string $class, string $id): object;
 
     /**
+     * Retrieves the id of the object.
+     *
+     * @param object $object The object that is in the map.
+     * @return string        The identifier for the object.
+     * @throws NoSuchObject  When the object is not in the map.
+     */
+    public function idOf(object $object): string;
+
+    /**
      * Adds an object to the map.
      *
      * @param string $id     The identity of the object, unique per class.
@@ -60,11 +69,10 @@ interface MapsObjectsByIdentity
     public function remove(string $class, string $id): MapsObjectsByIdentity;
 
     /**
-     * Retrieves the id of the object.
+     * Removes all objects of a class from the map.
      *
-     * @param object $object The object that is in the map.
-     * @return string        The identifier for the object.
-     * @throws NoSuchObject  When the object is not in the map.
+     * @param string $class
+     * @return MapsObjectsByIdentity
      */
-    public function idOf(object $object): string;
+    public function removeThe(string $class): MapsObjectsByIdentity;
 }

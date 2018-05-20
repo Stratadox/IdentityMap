@@ -147,6 +147,31 @@ class IdentityMap_contains_entities_by_id extends TestCase
      * @test
      * @dataProvider randomId
      */
+    function removing_all_objects_of_a_class($id)
+    {
+        $foo1 = new Foo;
+        $foo2 = new Foo;
+        $bar  = new Bar;
+        $map = IdentityMap::with([
+            "$id:1" => $foo1,
+            "$id:2" => $foo2,
+            $id     => $bar,
+        ]);
+        $map = $map->removeThe(Foo::class);
+
+        $this->assertFalse($map->has(Foo::class, "$id:1"));
+        $this->assertFalse($map->has(Foo::class, "$id:2"));
+        $this->assertTrue($map->has(Bar::class, $id));
+
+        $this->assertFalse($map->hasThe($foo1));
+        $this->assertFalse($map->hasThe($foo2));
+        $this->assertTrue($map->hasThe($bar));
+    }
+
+    /**
+     * @test
+     * @dataProvider randomId
+     */
     function retrieving_the_id_of_a_mapped_entity($id)
     {
         $foo = new Foo;
