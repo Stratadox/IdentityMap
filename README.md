@@ -60,6 +60,10 @@ Objects can be removed from the map by using:
 ```php
 $map = $map->remove(Foo::class, 'id3');
 ```
+Or:
+```php
+$map = $map->removeThe($object);
+```
 Entire classes can be removed with:
 ```php
 $map = $map->removeAllObjectsOfThe(Foo::class);

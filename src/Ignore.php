@@ -68,6 +68,12 @@ final class Ignore implements MapsObjectsByIdentity
     }
 
     /** @inheritdoc */
+    public function removeThe(object $object): MapsObjectsByIdentity
+    {
+        return $this->identityMap->removeThe($object);
+    }
+
+    /** @inheritdoc */
     public function removeAllObjectsOfThe(string $class): MapsObjectsByIdentity
     {
         if ($class === $this->ignoredClass) {

@@ -6,6 +6,7 @@ namespace Stratadox\IdentityMap\Test\Unit;
 use PHPUnit\Framework\TestCase;
 use Stratadox\IdentityMap\IdentityMap;
 use Stratadox\IdentityMap\Ignore;
+use Stratadox\IdentityMap\NoSuchObject;
 use Stratadox\IdentityMap\Test\Unit\Fixture\Bar;
 use Stratadox\IdentityMap\Test\Unit\Fixture\Foo;
 
@@ -97,6 +98,24 @@ class Ignore_all_instances_of_a_class extends TestCase
     }
 
     /** @test */
+    function removing_non_ignored_instances_from_the_map()
+    {
+        $foo1 = new Foo;
+        $foo2 = new Foo;
+        $map = Ignore::the(Bar::class, IdentityMap::with([
+            'foo1' => $foo1,
+            'foo2' => $foo2,
+        ]));
+
+        $map = $map->removeThe($foo1);
+
+        $this->assertFalse($map->has(Foo::class, 'foo1'));
+        $this->assertFalse($map->hasThe($foo1));
+        $this->assertTrue($map->has(Foo::class, 'foo2'));
+        $this->assertTrue($map->hasThe($foo2));
+    }
+
+    /** @test */
     function silently_ignoring_remove_operations_on_ignored_classes()
     {
         $map = Ignore::the(Foo::class, IdentityMap::with(['foo' => new Foo]));
@@ -115,5 +134,36 @@ class Ignore_all_instances_of_a_class extends TestCase
         $map = $map->add('bar', $bar);
 
         $this->assertSame('bar', $map->idOf($bar));
+    }
+
+    /** @test */
+    function throwing_an_exception_when_removing_an_unregistered_instance()
+    {
+        $map = Ignore::the(Bar::class, IdentityMap::startEmpty());
+
+        $this->expectException(NoSuchObject::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            'The object of class `' . Foo::class . '` is not in the identity map.'
+        );
+
+        $map->removeThe(new Foo);
+    }
+
+    /** @test */
+    function throwing_an_exception_when_removing_an_ignored_instance()
+    {
+        $foo = new Foo;
+        $map = Ignore::the(Foo::class, IdentityMap::with([
+            'foo' => $foo
+        ]));
+
+        $this->expectException(NoSuchObject::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            'The object of class `' . Foo::class . '` is not in the identity map.'
+        );
+
+        $map->removeThe($foo);
     }
 }

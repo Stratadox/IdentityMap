@@ -96,6 +96,12 @@ final class IdentityMap implements MapsObjectsByIdentity
     }
 
     /** @inheritdoc */
+    public function removeThe(object $object): MapsObjectsByIdentity
+    {
+        return $this->remove(theClassOfThe($object), $this->idOf($object));
+    }
+
+    /** @inheritdoc */
     public function removeAllObjectsOfThe(string $class): MapsObjectsByIdentity
     {
         $objectsBy = $this->objectsBy;

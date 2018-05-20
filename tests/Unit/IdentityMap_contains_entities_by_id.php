@@ -39,6 +39,7 @@ class IdentityMap_contains_entities_by_id extends TestCase
     function having_the_object_instance_in_the_map($id)
     {
         $foo = new Foo;
+
         $this->assertTrue(IdentityMap::with([
             $id => $foo
         ])->hasThe($foo));
@@ -77,6 +78,7 @@ class IdentityMap_contains_entities_by_id extends TestCase
     function retrieving_the_object_from_the_map($id)
     {
         $foo = new Foo;
+
         $this->assertSame($foo, IdentityMap::with([
             $id => $foo
         ])->get(Foo::class, $id));
@@ -91,6 +93,7 @@ class IdentityMap_contains_entities_by_id extends TestCase
         $map = IdentityMap::with([
             $id => new Foo
         ]);
+
         $this->assertSame(
             $map->get(Foo::class, $id),
             $map->get(Foo::class, $id)
@@ -107,6 +110,7 @@ class IdentityMap_contains_entities_by_id extends TestCase
             "$id:1" => new Foo,
             "$id:2" => new Foo,
         ]);
+
         $this->assertEquals(
             $map->get(Foo::class, "$id:1"),
             $map->get(Foo::class, "$id:2")
@@ -125,7 +129,9 @@ class IdentityMap_contains_entities_by_id extends TestCase
     {
         $map = IdentityMap::startEmpty();
         $foo = new Foo;
+
         $map = $map->add($id, $foo);
+
         $this->assertTrue($map->has(Foo::class, $id));
         $this->assertTrue($map->hasThe($foo));
     }
@@ -136,11 +142,40 @@ class IdentityMap_contains_entities_by_id extends TestCase
      */
     function removing_the_object_from_the_map($id)
     {
+        $foo1 = new Foo;
+        $foo2 = new Foo;
         $map = IdentityMap::with([
-            $id => new Foo
+            "$id:1" => $foo1,
+            "$id:2" => $foo2,
         ]);
-        $map = $map->remove(Foo::class, $id);
-        $this->assertFalse($map->has(Foo::class, $id));
+
+        $map = $map->remove(Foo::class, "$id:1");
+
+        $this->assertFalse($map->has(Foo::class, "$id:1"));
+        $this->assertFalse($map->hasThe($foo1));
+        $this->assertTrue($map->has(Foo::class, "$id:2"));
+        $this->assertTrue($map->hasThe($foo2));
+    }
+
+    /**
+     * @test
+     * @dataProvider randomId
+     */
+    function removing_instances_from_the_map($id)
+    {
+        $foo1 = new Foo;
+        $foo2 = new Foo;
+        $map = IdentityMap::with([
+            "$id:1" => $foo1,
+            "$id:2" => $foo2,
+        ]);
+
+        $map = $map->removeThe($foo1);
+
+        $this->assertFalse($map->has(Foo::class, "$id:1"));
+        $this->assertFalse($map->hasThe($foo1));
+        $this->assertTrue($map->has(Foo::class, "$id:2"));
+        $this->assertTrue($map->hasThe($foo2));
     }
 
     /**
@@ -157,6 +192,7 @@ class IdentityMap_contains_entities_by_id extends TestCase
             "$id:2" => $foo2,
             $id     => $bar,
         ]);
+
         $map = $map->removeAllObjectsOfThe(Foo::class);
 
         $this->assertFalse($map->has(Foo::class, "$id:1"));
@@ -172,8 +208,8 @@ class IdentityMap_contains_entities_by_id extends TestCase
     function doing_nothing_when_removing_an_unknown_class()
     {
         $bar  = new Bar;
-
         $map = IdentityMap::with(['bar' => $bar]);
+
         $map = $map->removeAllObjectsOfThe(Foo::class);
 
         $this->assertTrue($map->has(Bar::class, 'bar'));
@@ -225,6 +261,20 @@ class IdentityMap_contains_entities_by_id extends TestCase
         );
 
         $map->remove(Foo::class, $id);
+    }
+
+    /** @test */
+    function throwing_an_exception_when_removing_an_unregistered_instance()
+    {
+        $map = IdentityMap::startEmpty();
+
+        $this->expectException(NoSuchObject::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            'The object of class `' . Foo::class . '` is not in the identity map.'
+        );
+
+        $map->removeThe(new Foo);
     }
 
     /**

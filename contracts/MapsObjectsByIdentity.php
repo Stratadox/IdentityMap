@@ -69,6 +69,15 @@ interface MapsObjectsByIdentity
     public function remove(string $class, string $id): MapsObjectsByIdentity;
 
     /**
+     * Removes an instance from the map.
+     *
+     * @param object $object The object to remove.
+     * @return IdentityMap  A copy of the map excluding the object.
+     * @throws NoSuchObject When there is no object of that class with that id.
+     */
+    public function removeThe(object $object): MapsObjectsByIdentity;
+
+    /**
      * Removes all objects of a class from the map.
      *
      * @param string $class
