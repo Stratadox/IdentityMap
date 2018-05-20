@@ -15,30 +15,30 @@ use function spl_object_id as theInstanceIdOf;
  */
 final class IdentityMap implements MapsObjectsByIdentity
 {
-    private $map;
-    private $reverseMap;
+    private $objectsBy;
+    private $entityIdFor;
 
-    private function __construct(array $map, array $reverseMap)
+    private function __construct(array $objectsByClassAndId, array $idsByObject)
     {
-        $this->map = $map;
-        $this->reverseMap = $reverseMap;
+        $this->objectsBy = $objectsByClassAndId;
+        $this->entityIdFor = $idsByObject;
     }
 
     /**
      * Produces a new identity map that contains the objects.
      *
-     * @param object[] $objects      The objects to add, as [id => object]
+     * @param object[] $theseObjects The objects to add, as [id => object]
      * @return MapsObjectsByIdentity The map of objects.
      */
-    public static function with(array $objects): MapsObjectsByIdentity
+    public static function with(array $theseObjects): MapsObjectsByIdentity
     {
-        $map = [];
-        $reverse = [];
-        foreach ($objects as $id => $object) {
-            $map = IdentityMap::addTo($map, (string) $id, $object);
-            $reverse[theInstanceIdOf($object)] = (string) $id;
+        $objects = [];
+        $entityIds = [];
+        foreach ($theseObjects as $id => $object) {
+            $objects = IdentityMap::addTo($objects, (string) $id, $object);
+            $entityIds[theInstanceIdOf($object)] = (string) $id;
         }
-        return new self($map, $reverse);
+        return new self($objects, $entityIds);
     }
 
     /**
@@ -54,20 +54,20 @@ final class IdentityMap implements MapsObjectsByIdentity
     /** @inheritdoc */
     public function has(string $class, string $id): bool
     {
-        return isset($this->map[$class][$id]);
+        return isset($this->objectsBy[$class][$id]);
     }
 
     /** @inheritdoc */
     public function hasThe(object $object): bool
     {
-        return isset($this->reverseMap[theInstanceIdOf($object)]);
+        return isset($this->entityIdFor[theInstanceIdOf($object)]);
     }
 
     /** @inheritdoc */
     public function get(string $class, string $id): object
     {
         $this->mustHave($class, $id);
-        return $this->map[$class][$id];
+        return $this->objectsBy[$class][$id];
     }
 
     /** @inheritdoc */
@@ -75,9 +75,10 @@ final class IdentityMap implements MapsObjectsByIdentity
     {
         $class = theClassOfThe($object);
         $this->mayNotAlreadyHave($class, $id);
+
         $new = clone $this;
-        $new->map[$class][$id] = $object;
-        $new->reverseMap[theInstanceIdOf($object)] = $id;
+        $new->objectsBy[$class][$id] = $object;
+        $new->entityIdFor[theInstanceIdOf($object)] = $id;
         return $new;
     }
 
@@ -85,38 +86,38 @@ final class IdentityMap implements MapsObjectsByIdentity
     public function remove(string $class, string $id): MapsObjectsByIdentity
     {
         $this->mustHave($class, $id);
-        $reverse = $this->reverseMap;
-        $map = $this->map;
+        $entityIdFor = $this->entityIdFor;
+        $objectsBy = $this->objectsBy;
         unset(
-            $reverse[theInstanceIdOf($map[$class][$id])],
-            $map[$class][$id]
+            $entityIdFor[theInstanceIdOf($objectsBy[$class][$id])],
+            $objectsBy[$class][$id]
         );
-        return new IdentityMap($map, $reverse);
+        return new IdentityMap($objectsBy, $entityIdFor);
     }
 
     /** @inheritdoc */
     public function removeAllObjectsOfThe(string $class): MapsObjectsByIdentity
     {
-        $map = $this->map;
-        if (!isset($map[$class])) {
+        $objectsBy = $this->objectsBy;
+        if (!isset($objectsBy[$class])) {
             return $this;
         }
-        $reverse = $this->reverseMap;
-        foreach ($map[$class] as $object) {
+        $entityIdFor = $this->entityIdFor;
+        foreach ($objectsBy[$class] as $object) {
             makeSureThat(itIsAn($object));
-            unset($reverse[theInstanceIdOf($object)]);
+            unset($entityIdFor[theInstanceIdOf($object)]);
         }
-        unset($map[$class]);
-        return new IdentityMap($map, $reverse);
+        unset($objectsBy[$class]);
+        return new IdentityMap($objectsBy, $entityIdFor);
     }
 
     /** @inheritdoc */
     public function idOf(object $object): string
     {
-        if (!isset($this->reverseMap[theInstanceIdOf($object)])) {
+        if (!isset($this->entityIdFor[theInstanceIdOf($object)])) {
             throw IdentityNotFound::forThe($object);
         }
-        return $this->reverseMap[theInstanceIdOf($object)];
+        return $this->entityIdFor[theInstanceIdOf($object)];
     }
 
     /**
@@ -151,14 +152,17 @@ final class IdentityMap implements MapsObjectsByIdentity
     /**
      * Adds the object to the map, returning the new map.
      *
-     * @param array  $map    The original map.
-     * @param string $id     The id of the object to add.
-     * @param object $object The object instance to add.
-     * @return array         A new map that includes the new object.
+     * @param array  $objectsBy The original map.
+     * @param string $withId    The id of the object to add.
+     * @param object $object    The object instance to add.
+     * @return array            A new map that includes the new object.
      */
-    private static function addTo(array $map, string $id, object $object): array
-    {
-        $map[theClassOfThe($object)][$id] = $object;
-        return $map;
+    private static function addTo(
+        array $objectsBy,
+        string $withId,
+        object $object
+    ): array {
+        $objectsBy[theClassOfThe($object)][$withId] = $object;
+        return $objectsBy;
     }
 }
