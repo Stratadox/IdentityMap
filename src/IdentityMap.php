@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Stratadox\IdentityMap;
 
 use function get_class as theClassOfThe;
+use function spl_object_id as theInstanceIdOf;
 
 /**
  * Contains objects by class and id.
@@ -13,25 +14,29 @@ use function get_class as theClassOfThe;
 final class IdentityMap implements MapsObjectsByIdentity
 {
     private $map;
+    private $reverseMap;
 
-    private function __construct(array $map)
+    private function __construct(array $map, array $reverseMap)
     {
         $this->map = $map;
+        $this->reverseMap = $reverseMap;
     }
 
     /**
      * Produces a new identity map that contains the objects.
      *
-     * @param array $objects         The objects to add, as [id => object]
+     * @param object[] $objects      The objects to add, as [id => object]
      * @return MapsObjectsByIdentity The map of objects.
      */
     public static function with(array $objects): MapsObjectsByIdentity
     {
         $map = [];
+        $reverse = [];
         foreach ($objects as $id => $object) {
             $map = IdentityMap::addTo($map, (string) $id, $object);
+            $reverse[theInstanceIdOf($object)] = (string) $id;
         }
-        return new self($map);
+        return new self($map, $reverse);
     }
 
     /**
@@ -41,13 +46,19 @@ final class IdentityMap implements MapsObjectsByIdentity
      */
     public static function startEmpty(): MapsObjectsByIdentity
     {
-        return new self([]);
+        return new self([], []);
     }
 
     /** @inheritdoc */
     public function has(string $class, string $id): bool
     {
         return isset($this->map[$class][$id]);
+    }
+
+    /** @inheritdoc */
+    public function hasThe(object $object): bool
+    {
+        return isset($this->reverseMap[theInstanceIdOf($object)]);
     }
 
     /** @inheritdoc */
@@ -62,30 +73,32 @@ final class IdentityMap implements MapsObjectsByIdentity
     {
         $class = theClassOfThe($object);
         $this->mayNotAlreadyHave($class, $id);
-        $map = $this->map;
-        $map[$class][$id] = $object;
-        return new IdentityMap($map);
+        $new = clone $this;
+        $new->map[$class][$id] = $object;
+        $new->reverseMap[theInstanceIdOf($object)] = $id;
+        return $new;
     }
 
     /** @inheritdoc */
     public function remove(string $class, string $id): MapsObjectsByIdentity
     {
         $this->mustHave($class, $id);
+        $reverse = $this->reverseMap;
         $map = $this->map;
-        unset($map[$class][$id]);
-        return new IdentityMap($map);
+        unset(
+            $reverse[theInstanceIdOf($map[$class][$id])],
+            $map[$class][$id]
+        );
+        return new IdentityMap($map, $reverse);
     }
 
     /** @inheritdoc */
     public function idOf(object $object): string
     {
-        $this->mustKnowThisTypeOf($object);
-        foreach ($this->map[theClassOfThe($object)] as $id => $mappedObject) {
-            if ($object === $mappedObject) {
-                return (string) $id;
-            }
+        if (!isset($this->reverseMap[theInstanceIdOf($object)])) {
+            throw IdentityNotFound::forThe($object);
         }
-        throw IdentityNotFound::forThe($object);
+        return $this->reverseMap[theInstanceIdOf($object)];
     }
 
     /**
@@ -114,19 +127,6 @@ final class IdentityMap implements MapsObjectsByIdentity
     {
         if ($this->has($class, $id)) {
             throw DuplicationDetected::in($class, $id);
-        }
-    }
-
-    /**
-     * Asserts that the class of the object is known to the identity map.
-     *
-     * @param object $object The object whose class must be known.
-     * @throws NoSuchObject  When there are no objects of this class in the map.
-     */
-    private function mustKnowThisTypeOf(object $object): void
-    {
-        if (!isset($this->map[theClassOfThe($object)])) {
-            throw IdentityNotFound::forThe($object);
         }
     }
 

@@ -22,6 +22,14 @@ interface MapsObjectsByIdentity
     public function has(string $class, string $id): bool;
 
     /**
+     * Checks whether the map has the object.
+     *
+     * @param object $object
+     * @return bool
+     */
+    public function hasThe(object $object): bool;
+
+    /**
      * Retrieves the object from the map.
      *
      * @param string $class The class of the object to check for.

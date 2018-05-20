@@ -25,7 +25,7 @@ class IdentityMap_contains_entities_by_id extends TestCase
      * @test
      * @dataProvider randomId
      */
-    function having_the_object_in_the_map($id)
+    function having_the_object_id_in_the_map($id)
     {
         $this->assertTrue(IdentityMap::with([
             $id => new Foo
@@ -36,9 +36,27 @@ class IdentityMap_contains_entities_by_id extends TestCase
      * @test
      * @dataProvider randomId
      */
-    function lacking_the_object_in_the_map($id)
+    function having_the_object_instance_in_the_map($id)
+    {
+        $foo = new Foo;
+        $this->assertTrue(IdentityMap::with([
+            $id => $foo
+        ])->hasThe($foo));
+    }
+
+    /**
+     * @test
+     * @dataProvider randomId
+     */
+    function lacking_the_object_id_in_the_map($id)
     {
         $this->assertFalse(IdentityMap::startEmpty()->has(Foo::class, $id));
+    }
+
+    /** @test */
+    function lacking_the_object_instance_in_the_map()
+    {
+        $this->assertFalse(IdentityMap::startEmpty()->hasThe(new Foo));
     }
 
     /**
@@ -109,6 +127,7 @@ class IdentityMap_contains_entities_by_id extends TestCase
         $foo = new Foo;
         $map = $map->add($id, $foo);
         $this->assertTrue($map->has(Foo::class, $id));
+        $this->assertTrue($map->hasThe($foo));
     }
 
     /**
