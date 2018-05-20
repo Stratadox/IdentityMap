@@ -30,6 +30,12 @@ final class IdentityNotFound extends InvalidArgument implements NoSuchObject
         ));
     }
 
+    /**
+     * Produces an exception for when the object instance is not in the map.
+     *
+     * @param object $object    The requested object that is not registered.
+     * @return IdentityNotFound The exception to throw.
+     */
     public static function forThe(object $object): self
     {
         return new IdentityNotFound(withMessage(

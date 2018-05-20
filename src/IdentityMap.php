@@ -126,13 +126,7 @@ final class IdentityMap implements MapsObjectsByIdentity
         return $this->entityIdFor[theInstanceIdOf($object)];
     }
 
-    /**
-     * Asserts that the object of the class with this id is present in the map.
-     *
-     * @param string $class The class of the object to check for.
-     * @param string $id    The identity of the object, unique per class.
-     * @throws NoSuchObject When there is no object with this id in the map.
-     */
+    /** @throws NoSuchObject */
     private function mustHave(string $class, string $id): void
     {
         if ($this->has($class, $id)) {
@@ -141,13 +135,7 @@ final class IdentityMap implements MapsObjectsByIdentity
         throw IdentityNotFound::requesting($class, $id);
     }
 
-    /**
-     * Asserts that the object of the class with this id is not already there.
-     *
-     * @param string $class The class of the object to check for.
-     * @param string $id    The identity of the object, unique per class.
-     * @throws AlreadyThere When there is already an object with this id.
-     */
+    /** @throws AlreadyThere */
     private function mayNotAlreadyHave(string $class, string $id): void
     {
         if ($this->has($class, $id)) {
@@ -155,14 +143,6 @@ final class IdentityMap implements MapsObjectsByIdentity
         }
     }
 
-    /**
-     * Adds the object to the map, returning the new map.
-     *
-     * @param array  $objectsBy The original map.
-     * @param string $withId    The id of the object to add.
-     * @param object $object    The object instance to add.
-     * @return array            A new map that includes the new object.
-     */
     private static function addTo(
         array $objectsBy,
         string $withId,
