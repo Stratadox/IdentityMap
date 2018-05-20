@@ -14,7 +14,7 @@ Maps objects by identity.
 ## About
 
 Contains the objects that have already been loaded.
-Used to prevent double loading of supposedly unique entities.
+Used to prevent double loading of unique entities.
 
 ## Installation
 
@@ -34,6 +34,8 @@ It's essentially just an immutable map of maps with objects.
 
 The first layer maps classes to the map of loaded objects for that class.
 The second layer maps from the identity to the actual object.
+
+Additionally, it contains a reverse map to quickly map an instance to its id.
 
 ## How to use this?
 
@@ -58,6 +60,10 @@ Objects can be removed from the map by using:
 ```php
 $map = $map->remove(Foo::class, 'id3');
 ```
+Entire classes can be removed with:
+```php
+$map = $map->removeAllObjectsOfThe(Foo::class);
+```
 
 ### Consulting the map
 
@@ -68,6 +74,10 @@ if ($map->has(Foo::class, '1')) { ...
 To retrieve the corresponding object from the map:
 ```php
 $object = $map->get(Foo::class, '1');
+```
+To check whether the object instance was added:
+```php
+if ($map->hasThe($object)) { ...
 ```
 To retrieve the id of an object that is in the map:
 ```php
