@@ -79,13 +79,13 @@ final class Ignore implements MapsObjectsByIdentity
         if ($class === $this->ignoredClass) {
             return $this;
         }
-        return $this->identityMap->remove($class, $id);
+        return $this->newMap($this->identityMap->remove($class, $id));
     }
 
     /** @inheritdoc */
     public function removeThe(object $object): MapsObjectsByIdentity
     {
-        return $this->identityMap->removeThe($object);
+        return $this->newMap($this->identityMap->removeThe($object));
     }
 
     /** @inheritdoc */
@@ -94,12 +94,17 @@ final class Ignore implements MapsObjectsByIdentity
         if ($class === $this->ignoredClass) {
             return $this;
         }
-        return $this->identityMap->removeAllObjectsOfThe($class);
+        return $this->newMap($this->identityMap->removeAllObjectsOfThe($class));
     }
 
     /** @inheritdoc */
     public function idOf(object $object): string
     {
         return $this->identityMap->idOf($object);
+    }
+
+    private function newMap(MapsObjectsByIdentity $map): MapsObjectsByIdentity
+    {
+        return new self($this->ignoredClass, $map);
     }
 }

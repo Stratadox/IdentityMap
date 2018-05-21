@@ -8,6 +8,7 @@ use Stratadox\IdentityMap\IdentityMap;
 use Stratadox\IdentityMap\Ignore;
 use Stratadox\IdentityMap\NoSuchObject;
 use Stratadox\IdentityMap\Test\Unit\Fixture\Bar;
+use Stratadox\IdentityMap\Test\Unit\Fixture\Baz;
 use Stratadox\IdentityMap\Test\Unit\Fixture\Foo;
 
 /**
@@ -79,6 +80,58 @@ class Ignore_all_instances_of_a_class extends TestCase
 
     /** @test */
     function ignoring_multiple_classes()
+    {
+        $map = Ignore::the(Foo::class, Ignore::the(Bar::class, IdentityMap::startEmpty()));
+
+        $map = $map
+            ->add('foo', new Foo)
+            ->add('bar', new Bar)
+            ->add('baz', new Baz);
+
+        $this->assertFalse($map->has(Foo::class, 'foo'));
+        $this->assertFalse($map->has(Bar::class, 'bar'));
+        $this->assertTrue($map->has(Baz::class, 'baz'));
+    }
+
+    /** @test */
+    function removing_an_entity_from_a_map_that_is_ignoring_multiple_classes()
+    {
+        $map = Ignore::the(Foo::class, Ignore::the(Bar::class, IdentityMap::startEmpty()));
+
+        $map = $map
+            ->add('baz1', new Baz)
+            ->add('baz2', new Baz)
+            ->remove(Baz::class, 'baz1')
+            ->add('foo', new Foo)
+            ->add('bar', new Bar);
+
+        $this->assertFalse($map->has(Foo::class, 'foo'));
+        $this->assertFalse($map->has(Bar::class, 'bar'));
+        $this->assertFalse($map->has(Baz::class, 'baz1'));
+        $this->assertTrue($map->has(Baz::class, 'baz2'));
+    }
+
+    /** @test */
+    function removing_an_object_from_a_map_that_is_ignoring_multiple_classes()
+    {
+        $map = Ignore::the(Foo::class, Ignore::the(Bar::class, IdentityMap::startEmpty()));
+
+        $baz1 = new Baz;
+        $map = $map
+            ->add('baz1', $baz1)
+            ->add('baz2', new Baz)
+            ->removeThe($baz1)
+            ->add('foo', new Foo)
+            ->add('bar', new Bar);
+
+        $this->assertFalse($map->has(Foo::class, 'foo'));
+        $this->assertFalse($map->has(Bar::class, 'bar'));
+        $this->assertFalse($map->has(Baz::class, 'baz1'));
+        $this->assertTrue($map->has(Baz::class, 'baz2'));
+    }
+
+    /** @test */
+    function ignoring_multiple_classes_at_once()
     {
         $this->assertEquals(
             Ignore::these(Foo::class, Bar::class),
