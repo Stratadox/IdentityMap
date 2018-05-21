@@ -199,6 +199,21 @@ class Ignore_all_instances_of_a_class extends TestCase
     }
 
     /** @test */
+    function listing_the_registered_classes()
+    {
+        $map = Ignore::the(Foo::class, IdentityMap::with([
+            new Foo,
+            new Bar,
+            new Baz
+        ]));
+
+        $this->assertSame([
+            Bar::class,
+            Baz::class,
+        ], $map->classes());
+    }
+
+    /** @test */
     function throwing_an_exception_when_removing_an_unregistered_instance()
     {
         $map = Ignore::the(Bar::class, IdentityMap::startEmpty());

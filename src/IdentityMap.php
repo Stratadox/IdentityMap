@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Stratadox\IdentityMap;
 
+use function array_keys;
 use function assert as makeSureThat;
 use function get_class as theClassOfThe;
 use function is_object as itIsAn;
@@ -124,6 +125,12 @@ final class IdentityMap implements MapsObjectsByIdentity
             throw IdentityNotFound::forThe($object);
         }
         return $this->entityIdFor[theInstanceIdOf($object)];
+    }
+
+    /** @inheritdoc */
+    public function classes(): array
+    {
+        return array_keys($this->objectWith);
     }
 
     /** @throws NoSuchObject */

@@ -12,6 +12,7 @@ use Stratadox\IdentityMap\AlreadyThere;
 use Stratadox\IdentityMap\IdentityMap;
 use Stratadox\IdentityMap\NoSuchObject;
 use Stratadox\IdentityMap\Test\Unit\Fixture\Bar;
+use Stratadox\IdentityMap\Test\Unit\Fixture\Baz;
 use Stratadox\IdentityMap\Test\Unit\Fixture\Foo;
 
 /**
@@ -225,6 +226,18 @@ class IdentityMap_contains_entities_by_id extends TestCase
         $map = IdentityMap::with([$id => $foo]);
 
         $this->assertSame($id, $map->idOf($foo));
+    }
+
+    /** @test */
+    function listing_the_registered_classes()
+    {
+        $map = IdentityMap::with([new Foo, new Bar, new Baz]);
+
+        $this->assertSame([
+            Foo::class,
+            Bar::class,
+            Baz::class,
+        ], $map->classes());
     }
 
     /**

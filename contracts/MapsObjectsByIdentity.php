@@ -88,4 +88,11 @@ interface MapsObjectsByIdentity
      * @return MapsObjectsByIdentity
      */
     public function removeAllObjectsOfThe(string $class): MapsObjectsByIdentity;
+
+    /**
+     * Retrieves a list of the (unique) classes of the objects in the map.
+     *
+     * @return string[]
+     */
+    public function classes(): array;
 }

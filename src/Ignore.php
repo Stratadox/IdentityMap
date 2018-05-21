@@ -103,6 +103,12 @@ final class Ignore implements MapsObjectsByIdentity
         return $this->identityMap->idOf($object);
     }
 
+    /** @inheritdoc */
+    public function classes(): array
+    {
+        return $this->identityMap->classes();
+    }
+
     private function newMap(MapsObjectsByIdentity $map): MapsObjectsByIdentity
     {
         return new self($this->ignoredClass, $map);
