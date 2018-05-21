@@ -6,6 +6,9 @@ namespace Stratadox\IdentityMap;
 /**
  * Ignore a certain class, for instance a value object.
  *
+ * @deprecated Use Whitelist instead.
+ * @see Whitelist
+ *
  * @author Stratadox
  */
 final class Ignore implements MapsObjectsByIdentity
