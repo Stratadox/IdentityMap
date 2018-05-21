@@ -34,8 +34,8 @@ final class Ignore implements MapsObjectsByIdentity
     /**
      * Wraps a new identity map with decorators that ignore certain classes.
      *
-     * @param string ...$ignoredClass The classes to be ignored.
-     * @return MapsObjectsByIdentity  The wrapped identity map.
+     * @param string ...$ignoredClasses The classes to be ignored.
+     * @return MapsObjectsByIdentity    The wrapped identity map.
      */
     public static function these(string ...$ignoredClasses): MapsObjectsByIdentity
     {
