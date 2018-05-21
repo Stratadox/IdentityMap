@@ -104,7 +104,10 @@ Adding objects of, in this case, the `SomeValueObject` class, will be silently
 ignored.
 
 Multiple value objects can be ignored by wrapping the wrapped maps:
-
 ```php
 $map = Ignore::the(Foo::class, Ignore::the(Bar::class, IdentityMap::startEmpty()));
+```
+Or using this shortcut:
+```php
+$map = Ignore::these(Foo::class, Bar::class);
 ```

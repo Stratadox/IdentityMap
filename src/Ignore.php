@@ -31,6 +31,21 @@ final class Ignore implements MapsObjectsByIdentity
         return new self($ignoredClass, $identityMap);
     }
 
+    /**
+     * Wraps a new identity map with decorators that ignore certain classes.
+     *
+     * @param string ...$ignoredClass The classes to be ignored.
+     * @return MapsObjectsByIdentity  The wrapped identity map.
+     */
+    public static function these(string ...$ignoredClasses): MapsObjectsByIdentity
+    {
+        $map = IdentityMap::startEmpty();
+        foreach ($ignoredClasses as $class) {
+            $map = Ignore::the($class, $map);
+        }
+        return $map;
+    }
+
     /** @inheritdoc */
     public function has(string $class, string $id): bool
     {

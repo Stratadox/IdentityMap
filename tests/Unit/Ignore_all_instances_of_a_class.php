@@ -78,6 +78,15 @@ class Ignore_all_instances_of_a_class extends TestCase
     }
 
     /** @test */
+    function ignoring_multiple_classes()
+    {
+        $this->assertEquals(
+            Ignore::these(Foo::class, Bar::class),
+            Ignore::the(Bar::class, Ignore::the(Foo::class, IdentityMap::startEmpty()))
+        );
+    }
+
+    /** @test */
     function silently_ignoring_remove_operations_on_ignored_objects()
     {
         $map = Ignore::the(Foo::class, IdentityMap::with(['foo' => new Foo]));
