@@ -98,16 +98,16 @@ map.
 
 This can be done by wrapping the identity map:
 ```php
-$map = Ignore::the(SomeValueObject::class, IdentityMap::startEmpty());
+$map = Whitelist::forThe(IdentityMap::startEmpty(), MyEntity::class);
 ```
-Adding objects of, in this case, the `SomeValueObject` class, will be silently
-ignored.
+Adding objects that are not, in this case, of the `MyEntity` class, will be 
+silently ignored.
 
-Multiple value objects can be ignored by wrapping the wrapped maps:
+Multiple entities can be whitelisted by specifying more classes:
 ```php
-$map = Ignore::the(Foo::class, Ignore::the(Bar::class, IdentityMap::startEmpty()));
+$map = Whitelist::forThe(IdentityMap::startEmpty(), Foo::class, Bar::class);
 ```
 Or using this shortcut:
 ```php
-$map = Ignore::these(Foo::class, Bar::class);
+$map = Whitelist::the(Foo::class, Bar::class);
 ```
