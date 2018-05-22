@@ -84,6 +84,7 @@ interface MapsObjectsByIdentity
     /**
      * Removes all objects of a class from the map.
      *
+     * @deprecated To be removed in v0.6
      * @param string $class
      * @return MapsObjectsByIdentity
      */
@@ -92,6 +93,7 @@ interface MapsObjectsByIdentity
     /**
      * Retrieves a list of the (unique) classes of the objects in the map.
      *
+     * @deprecated To be removed in v0.6
      * @return string[]
      */
     public function classes(): array;
