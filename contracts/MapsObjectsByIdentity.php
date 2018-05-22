@@ -95,4 +95,11 @@ interface MapsObjectsByIdentity
      * @return string[]
      */
     public function classes(): array;
+
+    /**
+     * Retrieves a list of the objects in the map.
+     *
+     * @return object[]
+     */
+    public function objects(): array;
 }

@@ -4,8 +4,11 @@ declare(strict_types=1);
 namespace Stratadox\IdentityMap;
 
 use function array_keys;
+use function array_merge;
+use function array_values;
 use function assert as makeSureThat;
 use function get_class as theClassOfThe;
+use function is_null as weDidNotYetList;
 use function is_object as itIsAn;
 use function spl_object_id as theInstanceIdOf;
 
@@ -18,6 +21,7 @@ final class IdentityMap implements MapsObjectsByIdentity
 {
     private $objectWith;
     private $entityIdFor;
+    private $objects;
 
     private function __construct(array $objectsByClassAndId, array $idsByObject)
     {
@@ -131,6 +135,18 @@ final class IdentityMap implements MapsObjectsByIdentity
     public function classes(): array
     {
         return array_keys($this->objectWith);
+    }
+
+    public function objects(): array
+    {
+        if (weDidNotYetList($this->objects)) {
+            $objects = [];
+            foreach ($this->objectWith as $class => $objectsById) {
+                $objects[] = array_values($objectsById);
+            }
+            $this->objects = array_merge(...$objects);
+        }
+        return $this->objects;
     }
 
     /** @throws NoSuchObject */

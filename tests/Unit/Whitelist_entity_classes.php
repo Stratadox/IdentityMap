@@ -232,7 +232,6 @@ class Whitelist_entity_classes extends TestCase
     /** @test */
     function listing_all_registered_classes()
     {
-
         $map = Whitelist::forThe(IdentityMap::with([
             new Foo,
             new Bar,
@@ -243,5 +242,21 @@ class Whitelist_entity_classes extends TestCase
             Foo::class,
             Bar::class
         ], $map->classes());
+    }
+
+    /** @test */
+    function listing_all_registered_objects()
+    {
+        $foo[0] = new Foo;
+        $foo[1] = new Foo;
+
+        $map = Whitelist::forThe(IdentityMap::with([
+            $foo[0],
+            new Bar,
+            $foo[1],
+            new Baz,
+        ]), Foo::class);
+
+        $this->assertSame($foo, $map->objects());
     }
 }

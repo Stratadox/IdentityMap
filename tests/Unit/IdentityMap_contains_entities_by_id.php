@@ -244,6 +244,23 @@ class IdentityMap_contains_entities_by_id extends TestCase
      * @test
      * @dataProvider randomId
      */
+    function listing_the_registered_objects($id)
+    {
+        $foo[0] = new Foo;
+        $foo[1] = new Foo;
+
+        $map = IdentityMap::with([
+            "$id:0" => $foo[0],
+            "$id:1" => $foo[1],
+        ]);
+
+        $this->assertSame($foo, $map->objects());
+    }
+
+    /**
+     * @test
+     * @dataProvider randomId
+     */
     function throwing_an_exception_when_getting_something_that_is_not_there($id)
     {
         $map = IdentityMap::startEmpty();

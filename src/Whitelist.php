@@ -115,6 +115,12 @@ final class Whitelist implements MapsObjectsByIdentity
         return $this->map->classes();
     }
 
+    /** @inheritdoc */
+    public function objects(): array
+    {
+        return $this->map->objects();
+    }
+
     private static function purgeIfNotIn(
         array $allowedClasses,
         MapsObjectsByIdentity $mapped,
