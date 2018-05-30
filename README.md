@@ -66,10 +66,6 @@ Or:
 ```php
 $map = $map->removeThe($object);
 ```
-Entire classes can be removed with:
-```php
-$map = $map->removeAllObjectsOfThe(Foo::class);
-```
 
 ### Consulting the map
 

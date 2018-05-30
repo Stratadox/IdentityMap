@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Stratadox\IdentityMap;
 
 use function array_keys;
-use function array_merge;
-use function array_values;
+use function array_merge as these;
+use function array_values as allThese;
 use function assert as makeSureThat;
 use function get_class as theClassOfThe;
 use function is_null as weDidNotYetList;
@@ -107,22 +107,6 @@ final class IdentityMap implements MapsObjectsByIdentity
     }
 
     /** @inheritdoc */
-    public function removeAllObjectsOfThe(string $class): MapsObjectsByIdentity
-    {
-        $objectsOf = $this->objectWith;
-        if (!isset($objectsOf[$class])) {
-            return $this;
-        }
-        $entityIdFor = $this->entityIdFor;
-        foreach ($objectsOf[$class] as $object) {
-            makeSureThat(itIsAn($object));
-            unset($entityIdFor[theInstanceIdOf($object)]);
-        }
-        unset($objectsOf[$class]);
-        return new IdentityMap($objectsOf, $entityIdFor);
-    }
-
-    /** @inheritdoc */
     public function idOf(object $object): string
     {
         if (!isset($this->entityIdFor[theInstanceIdOf($object)])) {
@@ -131,20 +115,14 @@ final class IdentityMap implements MapsObjectsByIdentity
         return $this->entityIdFor[theInstanceIdOf($object)];
     }
 
-    /** @inheritdoc */
-    public function classes(): array
-    {
-        return array_keys($this->objectWith);
-    }
-
     public function objects(): array
     {
         if (weDidNotYetList($this->objects)) {
             $objects = [];
             foreach ($this->objectWith as $class => $objectsById) {
-                $objects[] = array_values($objectsById);
+                $objects[] = allThese($objectsById);
             }
-            $this->objects = array_merge(...$objects);
+            $this->objects = these(...$objects);
         }
         return $this->objects;
     }

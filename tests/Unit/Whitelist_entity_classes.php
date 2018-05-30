@@ -23,13 +23,13 @@ class Whitelist_entity_classes extends TestCase
         $bar = new Bar;
 
         $map = Whitelist::forThe(IdentityMap::with([
-            'foo' => $foo,
-            'bar' => $bar,
+            'Foo' => $foo,
+            'Bar' => $bar,
         ]), Bar::class);
 
-        $this->assertFalse($map->has(Foo::class, 'foo'));
+        $this->assertFalse($map->has(Foo::class, 'Foo'));
         $this->assertFalse($map->hasThe($foo));
-        $this->assertTrue($map->has(Bar::class, 'bar'));
+        $this->assertTrue($map->has(Bar::class, 'Bar'));
         $this->assertTrue($map->hasThe($bar));
     }
 
@@ -189,59 +189,6 @@ class Whitelist_entity_classes extends TestCase
 
         $this->assertFalse($map->has(Foo::class, 'foo'));
         $this->assertFalse($map->hasThe($foo));
-    }
-
-    /** @test */
-    function removing_all_objects_of_whitelisted_classes()
-    {
-        $bar = new Bar;
-
-        $map = Whitelist::the(Bar::class)
-            ->add('bar', $bar)
-            ->removeAllObjectsOfThe(Bar::class);
-
-        $this->assertFalse($map->hasThe($bar));
-        $this->assertFalse($map->has(Bar::class, 'bar'));
-    }
-
-    /** @test */
-    function removing_all_objects_of_non_whitelisted_classes_has_no_effect()
-    {
-        $map = Whitelist::the(Bar::class)
-            ->add('foo', new Foo)
-            ->add('bar', new Bar);
-
-        $this->assertSame($map, $map->removeAllObjectsOfThe(Foo::class));
-    }
-
-    /** @test */
-    function ignoring_non_whitelisted_instances_after_purging_a_class()
-    {
-        $bar = new Bar;
-        $foo = new Foo;
-
-        $map = Whitelist::the(Bar::class)
-            ->add('bar', $bar)
-            ->removeAllObjectsOfThe(Bar::class)
-            ->add('foo', $foo);
-
-        $this->assertFalse($map->has(Foo::class, 'foo'));
-        $this->assertFalse($map->hasThe($foo));
-    }
-
-    /** @test */
-    function listing_all_registered_classes()
-    {
-        $map = Whitelist::forThe(IdentityMap::with([
-            new Foo,
-            new Bar,
-            new Baz,
-        ]), Foo::class, Bar::class, Whitelist::class);
-
-        $this->assertSame([
-            Foo::class,
-            Bar::class
-        ], $map->classes());
     }
 
     /** @test */

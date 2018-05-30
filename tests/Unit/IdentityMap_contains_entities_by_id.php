@@ -183,61 +183,12 @@ class IdentityMap_contains_entities_by_id extends TestCase
      * @test
      * @dataProvider randomId
      */
-    function removing_all_objects_of_a_class($id)
-    {
-        $foo1 = new Foo;
-        $foo2 = new Foo;
-        $bar  = new Bar;
-        $map = IdentityMap::with([
-            "$id:1" => $foo1,
-            "$id:2" => $foo2,
-            $id     => $bar,
-        ]);
-
-        $map = $map->removeAllObjectsOfThe(Foo::class);
-
-        $this->assertFalse($map->has(Foo::class, "$id:1"));
-        $this->assertFalse($map->has(Foo::class, "$id:2"));
-        $this->assertTrue($map->has(Bar::class, $id));
-
-        $this->assertFalse($map->hasThe($foo1));
-        $this->assertFalse($map->hasThe($foo2));
-        $this->assertTrue($map->hasThe($bar));
-    }
-
-    /** @test */
-    function doing_nothing_when_removing_an_unknown_class()
-    {
-        $bar  = new Bar;
-        $map = IdentityMap::with(['bar' => $bar]);
-
-        $map = $map->removeAllObjectsOfThe(Foo::class);
-
-        $this->assertTrue($map->has(Bar::class, 'bar'));
-    }
-
-    /**
-     * @test
-     * @dataProvider randomId
-     */
     function retrieving_the_id_of_a_mapped_entity($id)
     {
         $foo = new Foo;
         $map = IdentityMap::with([$id => $foo]);
 
         $this->assertSame($id, $map->idOf($foo));
-    }
-
-    /** @test */
-    function listing_the_registered_classes()
-    {
-        $map = IdentityMap::with([new Foo, new Bar, new Baz]);
-
-        $this->assertSame([
-            Foo::class,
-            Bar::class,
-            Baz::class,
-        ], $map->classes());
     }
 
     /**

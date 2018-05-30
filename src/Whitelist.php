@@ -32,14 +32,16 @@ final class Whitelist implements MapsObjectsByIdentity
      * @param MapsObjectsByIdentity $mapped            The actual identity map.
      * @param string                ...$allowedClasses The whitelisted classes.
      * @return MapsObjectsByIdentity                   The wrapped identity map.
+     * @throws NoSuchObject                            Probably won't though.
      */
     public static function forThe(
         MapsObjectsByIdentity $mapped,
         string ...$allowedClasses
     ): MapsObjectsByIdentity {
-        $alreadyMapped = $mapped->classes();
-        foreach ($alreadyMapped as $class) {
-            $mapped = Whitelist::purgeIfNotIn($allowedClasses, $mapped, $class);
+        foreach ($mapped->objects() as $object) {
+            if (Whitelist::doesNotHave($object, $allowedClasses)) {
+                $mapped = $mapped->removeThe($object);
+            }
         }
         return new Whitelist($allowedClasses, $mapped);
     }
@@ -101,39 +103,25 @@ final class Whitelist implements MapsObjectsByIdentity
     }
 
     /** @inheritdoc */
-    public function removeAllObjectsOfThe(string $class): MapsObjectsByIdentity
-    {
-        if (!in_array($class, $this->allow)) {
-            return $this;
-        }
-        return $this->newMap($this->map->removeAllObjectsOfThe($class));
-    }
-
-    /** @inheritdoc */
-    public function classes(): array
-    {
-        return $this->map->classes();
-    }
-
-    /** @inheritdoc */
     public function objects(): array
     {
         return $this->map->objects();
     }
 
-    private static function purgeIfNotIn(
-        array $allowedClasses,
-        MapsObjectsByIdentity $mapped,
-        string $class
-    ): MapsObjectsByIdentity {
-        if (in_array($class, $allowedClasses)) {
-            return $mapped;
-        }
-        return $mapped->removeAllObjectsOfThe($class);
-    }
-
     private function newMap(MapsObjectsByIdentity $map): MapsObjectsByIdentity
     {
         return new Whitelist($this->allow, $map);
+    }
+
+    private static function doesNotHave(
+        object $mapped,
+        array $allowedClasses
+    ): bool {
+        foreach ($allowedClasses as $class) {
+            if ($mapped instanceof $class) {
+                return false;
+            }
+        }
+        return true;
     }
 }
